@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+'use strict';
+
 var readline = require('readline');
 
 var rl = readline.createInterface({
@@ -7,8 +9,10 @@ var rl = readline.createInterface({
 	terminal: false
 });
 
-rl.on('line', (input) => console.log(reverseString(input)));
+rl.on('line', function (input) {
+	return console.log(reverseString(input));
+});
 
 function reverseString(str) {
-	return str.split('').reverse().join('')
+	return str.split('').reverse().join('');
 }
