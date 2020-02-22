@@ -4,11 +4,13 @@
   "description": "Basics. Node.js fundamental theory",
   "main": "tasks/task1.js",
   "scripts": {
-    "task1": "nodemon tasks/task1.js"
+    "task1": "nodemon tasks/task1.js",
+    "task2": "nodemon tasks/task2.js"
   },
   "author": "Yurii Onufreiv",
   "license": "ISC",
   "dependencies": {
+    "csvtojson": "^2.0.10",
     "nodemon": "^2.0.2"
   }
 }
