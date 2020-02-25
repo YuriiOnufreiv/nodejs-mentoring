@@ -6,6 +6,8 @@
   "scripts": {
     "task1": "nodemon tasks/task1.js",
     "task2": "nodemon tasks/task2.js",
+    "task1babel": "nodemon --exec babel-node tasks/task1.js",
+    "task2babel": "nodemon --exec babel-node tasks/task2.js",
     "build": "babel tasks -d tasks-babel"
   },
   "author": "Yurii Onufreiv",
