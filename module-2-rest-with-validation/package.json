@@ -1,0 +1,28 @@
+{
+  "name": "module-2-rest-with-validation",
+  "version": "1.0.0",
+  "description": "In memory CRUD REST service with validation",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src -c .eslintrc.json --ext js,jsx",
+    "dev": "nodemon src/index.js",
+    "devBabel": "nodemon --exec babel-node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.epam.com/Yurii_Onufreiv/nodejs-mentoring"
+  },
+  "author": "Yurii Onufreiv",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^10.0.3",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^6.8.0",
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "nodemon": "^2.0.2",
+    "underscore": "^1.9.2",
+    "uuid": "^7.0.0"
+  }
+}
