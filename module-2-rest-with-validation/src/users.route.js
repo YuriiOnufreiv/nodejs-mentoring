@@ -1,31 +1,35 @@
 const express = require('express');
 const usersSchema = require('./users.schema');
-const usersController = require('./users.controller');
+const UserService = require('./users.service');
+const UserController = require('./users.controller');
+
+const userService = new UserService();
+const userController = new UserController(userService);
 
 const api = express.Router();
 
 api.use(express.json());
 
 api.param('id',
-    usersController.processIdParam);
+    userController.processIdParam);
 
 api.post('/api/v1/users',
-    usersController.validateSchema(usersSchema),
-    usersController.createUser);
+    userController.validateSchema(usersSchema),
+    userController.createUser);
 
 api.get('/api/v1/users/:id',
-    usersController.findUser);
+    userController.findUser);
 
 api.get('/api/v1/users/',
-    usersController.findSuggested);
+    userController.findSuggested);
 
 api.delete('/api/v1/users/:id',
-    usersController.removeUser);
+    userController.removeUser);
 
 api.patch('/api/v1/users/:id',
-    usersController.validateSchema(usersSchema),
-    usersController.updateUser);
+    userController.validateSchema(usersSchema),
+    userController.updateUser);
 
-api.use(usersController.processError);
+api.use(userController.processError);
 
 module.exports = api;
