@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 module.exports = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -36,6 +38,11 @@ module.exports = class UserController {
     updateUser = (req, res) => {
         this.userService.update(req.user, req.body);
         res.status(200).send();
+    };
+
+    logRequest = (req, res, next) => {
+        logger.logRequest(req);
+        next();
     };
 
     processError = (error, req, res, next) => {

@@ -10,6 +10,8 @@ const api = express.Router();
 
 api.use(express.json());
 
+api.use(userController.logRequest);
+
 api.param('id',
     userController.processIdParam);
 
