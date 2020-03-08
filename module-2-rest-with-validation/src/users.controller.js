@@ -1,4 +1,5 @@
 const logger = require('./logger');
+const UserError = require('./users.error');
 
 module.exports = class UserController {
     constructor(userService) {
@@ -8,9 +9,7 @@ module.exports = class UserController {
     processIdParam = (req, res, next, id) => {
         req.user = this.userService.find(id);
         if (req.user === undefined || req.user.isDeleted === true) {
-            const error = new Error(`User with id ${id} not found`);
-            error.statusCode = 404;
-            throw error;
+            throw new UserError(`User with id ${id} not found`, 404);
         }
         next();
     };
@@ -46,9 +45,13 @@ module.exports = class UserController {
     };
 
     processError = (error, req, res, next) => {
-        const { statusCode, message } = error;
-        res.status(statusCode).json({ message });
-        next(error);
+        logger.logError(error);
+        if (error instanceof UserError) {
+            res.status(error.statusCode).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+        next();
     };
 
     validateSchema = (schema)  => (req, res, next) => {

@@ -18,6 +18,10 @@ const logger = createLogger({
     transports: logTransports
 });
 
+exports.logError = (error) => {
+    logger.error(error.stack);
+};
+
 exports.logInfo = (message) => {
     logger.info(message);
 };
