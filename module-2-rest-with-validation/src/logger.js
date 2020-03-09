@@ -1,4 +1,5 @@
 const winston = require('winston');
+const util = require('util');
 const { createLogger, format, transports } = winston;
 
 const logFormatter = format.printf(({ level, message, timestamp }) => {
@@ -18,14 +19,7 @@ const logger = createLogger({
     transports: logTransports
 });
 
-exports.logError = (error) => {
-    logger.error(error.stack);
-};
-
-exports.logInfo = (message) => {
-    logger.info(message);
-};
-
-exports.logRequest = (req) => {
-    this.logInfo(`${req.method} Request to ${req.url} | Body: ${JSON.stringify(req.body)} | Query params: ${JSON.stringify(req.query)}`);
-};
+module.exports.logInfo = (message) => logger.info(message);
+module.exports.logRequest = (req) => logger.info(`${req.method} Request to ${req.url} | Body: ${JSON.stringify(req.body)} | Query params: ${JSON.stringify(req.query)}`);
+module.exports.logError = (error) => logger.error(error.stack);
+module.exports.logMethodError = (name, message, args) => logger.error(`[error in ${name}] ${message}. Arguments: ${JSON.stringify(util.inspect(args))}`);
