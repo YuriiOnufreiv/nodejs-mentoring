@@ -1,14 +1,14 @@
 const express = require('express');
 const usersSchema = require('./users.schema');
-const UserService = require('./users.service');
 const UserController = require('./users.controller');
 
-const userService = new UserService();
-const userController = new UserController(userService);
+const userController = new UserController();
 
 const api = express.Router();
 
 api.use(express.json());
+
+api.use(userController.logRequest);
 
 api.param('id',
     userController.processIdParam);

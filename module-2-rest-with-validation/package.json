@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src -c .eslintrc.json --ext js,jsx",
     "dev": "nodemon src/index.js",
-    "devBabel": "nodemon --exec babel-node src/index.js"
+    "devBabel": "nodemon --exec babel-node src/index.js",
+    "build": "babel src -d src-babel"
   },
   "repository": {
     "type": "git",
@@ -15,14 +16,19 @@
   "author": "Yurii Onufreiv",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^10.0.3",
-    "babel-preset-env": "^1.7.0",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@babel/plugin-transform-classes": "^7.8.6",
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "express": "^4.17.1",
     "joi": "^14.3.1",
     "nodemon": "^2.0.2",
     "underscore": "^1.9.2",
-    "uuid": "^7.0.0"
+    "uuid": "^7.0.2",
+    "winston": "^3.2.1"
   }
 }
