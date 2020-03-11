@@ -1,12 +1,25 @@
 const _ = require('underscore');
 const { v4: uuidv4 } = require('uuid');
 
+function getAdminUser() {
+    return {
+        login: 'admin',
+        password: 'Admin1',
+        age: 50
+    };
+}
+
 module.exports = class UserService {
     constructor() {
         this.data = [];
+        this.add(getAdminUser());
     }
 
-    find = (id) => _.find(this.data, { id });
+    getUserForlogin = (login, password) => {
+        return this.findMatchingUser({ login, password, isDeleted: false });
+    };
+
+    find = (id) => this.findMatchingUser({ id });
 
     findSuggested = (loginSubstring, limit) => _(this.data).chain()
         .filter((user) => user.login.includes(loginSubstring))
@@ -15,6 +28,7 @@ module.exports = class UserService {
 
     add = (user) => {
         user.id = uuidv4();
+        user.isDeleted = false;
         this.data.push(user);
         return user;
     };
@@ -26,4 +40,8 @@ module.exports = class UserService {
         existing.password = updated.password;
         existing.age = updated.age;
     };
+
+    findMatchingUser = (predicate) => {
+        return _.find(this.data, predicate);
+    }
 };
