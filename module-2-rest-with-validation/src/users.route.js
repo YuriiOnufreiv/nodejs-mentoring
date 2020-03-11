@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const usersSchema = require('./users.schema');
 const routeUtils = require('./route.utils');
 const UserService = require('./users.service');
@@ -14,6 +15,8 @@ const userController = new UserController(userService);
 const authController = new AuthController(userService, authService, nonSecurePaths);
 
 const api = express.Router();
+
+api.options('*', cors());
 
 api.use(express.json());
 api.use(userController.logRequest);
