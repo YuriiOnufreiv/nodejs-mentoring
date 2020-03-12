@@ -1,8 +1,7 @@
 const logger = require('./logger');
 const UserError = require('./users.error');
-const UserService = require('./users.service');
 
-const userService = new UserService();
+let userService;
 
 function errorLogger(target, name, descriptor) {
     const value = descriptor.initializer().bind(target);
@@ -18,6 +17,10 @@ function errorLogger(target, name, descriptor) {
 }
 
 module.exports = class UserController {
+    constructor(userServiceArg) {
+        userService = userServiceArg;
+    }
+
     @errorLogger
     processIdParam = (req, res, next, id) => {
         req.user = userService.find(id);
@@ -62,14 +65,13 @@ module.exports = class UserController {
         next();
     };
 
-    processError = (error, req, res, next) => {
+    processUserError = (error, req, res, next) => {
         logger.logError(error);
         if (error instanceof UserError) {
             res.status(error.statusCode).json({ message: error.message });
-        } else {
-            res.status(500).json({ message: 'Internal Server Error' });
+            return next();
         }
-        next();
+        next(error);
     };
 
     validateSchema = (schema)  => (req, res, next) => {
