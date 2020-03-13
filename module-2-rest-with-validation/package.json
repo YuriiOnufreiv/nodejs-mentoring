@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint src -c .eslintrc.json --ext js,jsx",
     "devUsers": "nodemon --exec babel-node src/users/index.js",
+    "devGroups": "nodemon --exec babel-node src/groups/index.js",
     "build": "babel src -d src-babel"
   },
   "repository": {
