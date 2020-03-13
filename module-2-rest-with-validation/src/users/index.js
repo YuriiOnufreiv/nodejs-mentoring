@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const usersApiRoute = require('./users.route');
-const logger = require('./logger');
+const logger = require('../loggers/logger');
 
 process.on('unhandledRejection', (reason) => {
     logger.logError(reason);

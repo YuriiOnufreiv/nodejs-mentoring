@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const logger = require('../loggers/logger');
 const UserError = require('./users.error');
 
 let userService;

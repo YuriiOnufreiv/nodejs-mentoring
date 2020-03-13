@@ -1,5 +1,5 @@
 const _ = require('underscore');
-const logger = require('./logger');
+const logger = require('../loggers/logger');
 const AuthError = require('./auth.error');
 const UserError = require('./users.error');
 
