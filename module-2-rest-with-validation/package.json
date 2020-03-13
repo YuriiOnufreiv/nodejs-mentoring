@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src -c .eslintrc.json --ext js,jsx",
-    "dev": "nodemon src/index.js",
-    "devBabel": "nodemon --exec babel-node src/index.js",
+    "devUsers": "nodemon --exec babel-node src/users/index.js",
     "build": "babel src -d src-babel"
   },
   "repository": {
