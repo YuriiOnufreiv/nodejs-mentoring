@@ -1,3 +1,4 @@
+const axios = require('axios');
 const logger = require('../loggers/logger');
 const UserError = require('./users.error');
 
@@ -16,23 +17,53 @@ function errorLogger(target, name, descriptor) {
     return target[name];
 }
 
+function getUserGroup(groupId, res, responseProcessor) {
+    axios.get(`http://localhost:8081/api/v1/groups/${groupId}`)
+        .then(responseProcessor)
+        .catch(error => {
+            logger.logError(error);
+            if (error.response.status === 404) {
+                res.status(404).json({ message: `Group ${groupId} not found` });
+            } else {
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
+}
+
 module.exports = class UserController {
     constructor(userServiceArg) {
         userService = userServiceArg;
     }
 
     @errorLogger
-    processIdParam = (req, res, next, id) => {
-        req.user = userService.find(id);
+    processIdParam = (req, res, next, userId) => {
+        req.user = userService.find(userId);
         if (req.user === undefined || req.user.isDeleted === true) {
-            throw new UserError(`User with id ${id} not found`, 404);
+            throw new UserError(`User with id ${userId} not found`, 404);
         }
         next();
     };
 
     @errorLogger
     findUser = (req, res) => {
-        res.status(200).json(req.user);
+        const user = req.user;
+        getUserGroup(user.groupId, res, groupResponse => {
+            const { groupId, ...userToReturn } = user;
+            const group = groupResponse.data;
+            logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
+            userToReturn.group = group;
+            res.status(200).json(userToReturn);
+        });
+    };
+
+    @errorLogger
+    findUserGroup = (req, res) => {
+        const groupId = req.params.groupId;
+        getUserGroup(groupId, res, groupResponse => {
+            const group = groupResponse.data;
+            logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
+            res.status(200).json(group);
+        });
     };
 
     @errorLogger

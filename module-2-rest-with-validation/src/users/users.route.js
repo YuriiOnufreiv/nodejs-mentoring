@@ -22,14 +22,15 @@ api.use(express.json());
 api.use(userController.logRequest);
 api.use(authController.validateToken);
 
-api.param('id', userController.processIdParam);
+api.param('userId', userController.processIdParam);
 
 api.post('/api/v1/users/login', authController.login);
 api.post('/api/v1/users', userController.validateSchema(usersSchema), userController.createUser);
-api.get('/api/v1/users/:id', userController.findUser);
+api.get('/api/v1/users/:userId', userController.findUser);
 api.get('/api/v1/users/', userController.findSuggested);
-api.delete('/api/v1/users/:id', userController.removeUser);
-api.patch('/api/v1/users/:id', userController.validateSchema(usersSchema), userController.updateUser);
+api.get('/api/v1/users/groups/:groupId', userController.findUserGroup);
+api.delete('/api/v1/users/:userId', userController.removeUser);
+api.patch('/api/v1/users/:userId', userController.validateSchema(usersSchema), userController.updateUser);
 
 api.use(authController.processAuthError);
 api.use(userController.processUserError);
