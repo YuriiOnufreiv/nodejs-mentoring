@@ -2,6 +2,9 @@ const axios = require('axios');
 const logger = require('../loggers/logger');
 const UserError = require('./users.error');
 
+require('dotenv').config();
+
+const groupsServiceUrl = `${process.env.GROUPS_SERVICE_URL}:${process.env.GROUPS_SERVICE_PORT}`;
 let userService;
 
 function errorLogger(target, name, descriptor) {
@@ -18,7 +21,7 @@ function errorLogger(target, name, descriptor) {
 }
 
 function getUserGroup(groupId, res, responseProcessor) {
-    axios.get(`http://localhost:8081/api/v1/groups/${groupId}`)
+    axios.get(`${groupsServiceUrl}/api/v1/groups/${groupId}`)
         .then(responseProcessor)
         .catch(error => {
             logger.logError(error);

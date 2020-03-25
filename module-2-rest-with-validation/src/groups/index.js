@@ -3,6 +3,8 @@ const app = express();
 const groupsApiRoute = require('./groups.route');
 const logger = require('../loggers/logger');
 
+require('dotenv').config();
+
 process.on('unhandledRejection', (reason) => {
     logger.logError(reason);
 }).on('uncaughtException', err => {
@@ -10,7 +12,7 @@ process.on('unhandledRejection', (reason) => {
     process.exit(1);
 });
 
-const port = 8081;
+const port = process.env.GROUPS_SERVICE_PORT;
 
 app.use('/', groupsApiRoute);
 
