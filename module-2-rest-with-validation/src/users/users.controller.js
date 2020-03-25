@@ -105,26 +105,20 @@ module.exports = class UserController {
         next(error);
     };
 
-    validateSchema = (schema)  => (req, res, next) => {
+    validateSchema = (schema) => (req, res, next) => {
         const { error } = schema.validate(req.body, {
             abortEarly: false,
             allowUnknown: false
         });
+
         if (error) {
-            res.status(400).json(this.errorResponse(error.details));
+            const errors = error.map((errorDetails) => {
+                const { path, message } = errorDetails;
+                return { path, message };
+            });
+            res.status(400).json({ status: 'failed', errors });
         } else {
             return next();
         }
     };
-
-    errorResponse = (schemaErrors) => {
-        const errors = schemaErrors.map((error) => {
-            const { path, message } = error;
-            return { path, message };
-        });
-        return {
-            status: 'failed',
-            errors
-        };
-    }
 };
