@@ -12,7 +12,7 @@ module.exports = class AuthController {
 
     login = (req, res) => {
         const user = this.userService.getUserForlogin(req.body.username, req.body.password);
-        if (user === null) {
+        if (user === undefined) {
             throw new UserError('Invalid username or password', 403);
         }
         const token = this.authService.generateToken(user);

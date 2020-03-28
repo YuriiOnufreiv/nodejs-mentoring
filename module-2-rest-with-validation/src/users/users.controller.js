@@ -25,10 +25,10 @@ function getUserGroup(groupId, res, responseProcessor) {
         .then(responseProcessor)
         .catch(error => {
             logger.logError(error);
-            if (error.response.status === 404) {
-                res.status(404).json({ message: `Group ${groupId} not found` });
-            } else {
+            if (error.response === undefined) {
                 res.status(500).json({ message: 'Internal Server Error' });
+            } else if (error.response.status === 404) {
+                res.status(404).json({ message: `Group ${groupId} not found` });
             }
         });
 }
@@ -50,7 +50,7 @@ module.exports = class UserController {
     @errorLogger
     findUser = (req, res) => {
         const user = req.user;
-        getUserGroup(user.groupId, res, groupResponse => {
+        getUserGroup(user.groupId, res, (groupResponse) => {
             const { groupId, ...userToReturn } = user;
             const group = groupResponse.data;
             logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
@@ -62,7 +62,7 @@ module.exports = class UserController {
     @errorLogger
     findUserGroup = (req, res) => {
         const groupId = req.params.groupId;
-        getUserGroup(groupId, res, groupResponse => {
+        getUserGroup(groupId, res, (groupResponse) => {
             const group = groupResponse.data;
             logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
             res.status(200).json(group);
