@@ -1,10 +1,12 @@
-const axios = require('axios');
 const logger = require('../loggers/logger');
+const axiosUtils = require('../utils/axios.utils');
+const userGroupUtils = require('../utils/user.group.utils');
 const UserError = require('./users.error');
 
 require('dotenv').config();
 
-const groupsServiceUrl = `${process.env.GROUPS_SERVICE_URL}:${process.env.GROUPS_SERVICE_PORT}`;
+const groupsServiceUrl = `${process.env.GROUPS_SERVICE_URL}:${process.env.GROUPS_SERVICE_PORT}/api/v1/groups`;
+
 let userService;
 
 function errorLogger(target, name, descriptor) {
@@ -18,19 +20,6 @@ function errorLogger(target, name, descriptor) {
         }
     };
     return target[name];
-}
-
-function getUserGroup(groupId, res, responseProcessor) {
-    axios.get(`${groupsServiceUrl}/api/v1/groups/${groupId}`)
-        .then(responseProcessor)
-        .catch(error => {
-            logger.logError(error);
-            if (error.response === undefined) {
-                res.status(500).json({ message: 'Internal Server Error' });
-            } else if (error.response.status === 404) {
-                res.status(404).json({ message: `Group ${groupId} not found` });
-            }
-        });
 }
 
 module.exports = class UserController {
@@ -50,23 +39,17 @@ module.exports = class UserController {
     @errorLogger
     findUser = (req, res) => {
         const user = req.user;
-        getUserGroup(user.groupId, res, (groupResponse) => {
-            const { groupId, ...userToReturn } = user;
-            const group = groupResponse.data;
-            logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
-            userToReturn.group = group;
-            res.status(200).json(userToReturn);
-        });
+        axiosUtils.getRequest(`${groupsServiceUrl}/${user.groupId}`,
+            userGroupUtils.getUserWithGroupSuccessCallback(res, user),
+            userGroupUtils.processGroupRequestError(res, user.groupId));
     };
 
     @errorLogger
     findUserGroup = (req, res) => {
         const groupId = req.params.groupId;
-        getUserGroup(groupId, res, (groupResponse) => {
-            const group = groupResponse.data;
-            logger.logInfo(`Retrieved group with id [${groupId}]: ${JSON.stringify(group)}`);
-            res.status(200).json(group);
-        });
+        axiosUtils.getRequest(`${groupsServiceUrl}/${groupId}`,
+            userGroupUtils.getGroupSuccessCallback(res, groupId),
+            userGroupUtils.processGroupRequestError(res, groupId));
     };
 
     @errorLogger

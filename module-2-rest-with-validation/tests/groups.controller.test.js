@@ -103,19 +103,19 @@ describe('logRequest()', () => {
     });
 });
 
-const mockRequest = (id) => {
+function mockRequest(id) {
     return {
         group: mockGroup(id)
     };
-};
+}
 
-const mockGroup = (id) => {
+function mockGroup(id) {
     return { id };
-};
+}
 
-const mockResponse = () => {
+function mockResponse() {
     const resMock = {};
     resMock.status = jest.fn().mockReturnValue(resMock);
     resMock.json = jest.fn().mockReturnValue(resMock);
     return resMock;
-};
+}

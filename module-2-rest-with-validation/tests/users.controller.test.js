@@ -1,10 +1,18 @@
 const UserService = require('../src/users/users.service');
 const UserController = require('../src/users/users.controller');
 const UserError = require('../src/users/users.error');
-const mockAxios = require('axios');
+
+jest.mock('../src/utils/axios.utils');
+const axiosUtils = require('../src/utils/axios.utils');
+
+jest.mock('../src/utils/user.group.utils');
+const userGroupUtils = require('../src/utils/user.group.utils');
 
 jest.mock('../src/loggers/logger');
 const logger = require('../src/loggers/logger');
+
+require('dotenv').config();
+const groupsServiceUrl = `${process.env.GROUPS_SERVICE_URL}:${process.env.GROUPS_SERVICE_PORT}/api/v1/groups`;
 
 const userService = new UserService();
 const userController = new UserController(userService);
@@ -72,45 +80,28 @@ describe('processIdParam()', () => {
 });
 
 describe('findUser()', () => {
-    it('should return user with group', async () => {
-        const group =  { id: userGroupId };
+    it('should call utils function to retrieve user with group', () => {
+        userGroupUtils.getUserWithGroupSuccessCallback.mockReturnValue('getUserWithGroupSuccessCallback');
+        userGroupUtils.processGroupRequestError.mockReturnValue('processGroupRequestError');
         req = mockRequest({ id: userId, groupId: userGroupId });
-        mockAxios.get.mockResolvedValue({ data: group });
 
-        await userController.findUser(req, res);
+        userController.findUser(req, res);
 
-        expect(logger.logInfo).toHaveBeenCalledWith(`Retrieved group with id [${userGroupId}]: ${JSON.stringify(group)}`);
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({ id: 'userId',
-            isDeleted: false,
-            group: { id: userGroupId }
-        });
+        expect(axiosUtils.getRequest).toHaveBeenCalledWith(`${groupsServiceUrl}/${userGroupId}`,
+            'getUserWithGroupSuccessCallback', 'processGroupRequestError');
     });
 });
 
 describe('findUserGroup()', () => {
-    it('should return result of GET request to Group service and status code 200', async () => {
-        const group =  { id: userGroupId };
-        mockAxios.get.mockResolvedValue({ data: group });
+    it('should call utils function to retrieve user group', () => {
+        userGroupUtils.getGroupSuccessCallback.mockReturnValue('getGroupSuccessCallback');
+        userGroupUtils.processGroupRequestError.mockReturnValue('processGroupRequestError');
         req = { params: { groupId: userGroupId } };
 
-        await userController.findUserGroup(req, res);
+        userController.findUserGroup(req, res);
 
-        expect(logger.logInfo).toHaveBeenCalledWith(`Retrieved group with id [${userGroupId}]: ${JSON.stringify(group)}`);
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(group);
-    });
-
-    it('should return response with status 404', async () => {
-        const error = { response: { status: 404 } };
-        mockAxios.get.mockImplementationOnce(() => Promise.reject(error));
-        req = { params: { groupId: userGroupId } };
-
-        await userController.findUserGroup(req, res);
-
-        expect(logger.logError).toHaveBeenCalledWith(error);
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(`Group ${userGroupId} not found`);
+        expect(axiosUtils.getRequest).toHaveBeenCalledWith(`${groupsServiceUrl}/${userGroupId}`,
+            'getGroupSuccessCallback', 'processGroupRequestError');
     });
 });
 
@@ -245,7 +236,7 @@ describe('validateSchema()', () => {
     });
 });
 
-const mockRequest = (requestContent) => {
+function mockRequest(requestContent) {
     if (requestContent) {
         const { id, bodyMock, queryMock, groupId } = requestContent;
         return {
@@ -256,16 +247,16 @@ const mockRequest = (requestContent) => {
     }
 
     return {};
-};
+}
 
-const mockUser = (id, isDeleted, groupId) => {
+function mockUser(id, isDeleted, groupId) {
     return { id, isDeleted, groupId };
-};
+}
 
-const mockResponse = () => {
+function mockResponse() {
     const resMock = {};
     resMock.status = jest.fn().mockReturnValue(resMock);
     resMock.json = jest.fn().mockReturnValue(resMock);
     resMock.send = jest.fn().mockReturnValue(resMock);
     return resMock;
-};
+}
