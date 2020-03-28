@@ -219,11 +219,13 @@ describe('validateSchema()', () => {
     it('should validate request body against schema and return status 400 without calling next when object is invalid', () => {
         const user = mockUser(userId, false);
         req = mockRequest({ id: userId, bodyMock: user });
-        const schemaErrors = [
-            { path: 'path', message: 'message', reason: 'willBeRemoved' },
-            { path: 'path', message: 'message', reason: 'willBeRemoved' },
-            { path: 'path', message: 'message', reason: 'willBeRemoved' }
-        ];
+        const schemaErrors = {
+            details: [
+                { path: 'path', message: 'message', reason: 'willBeRemoved' },
+                { path: 'path', message: 'message', reason: 'willBeRemoved' },
+                { path: 'path', message: 'message', reason: 'willBeRemoved' }
+            ]
+        };
         schema.validate.mockReturnValue({ error: schemaErrors });
 
         userController.validateSchema(schema)(req, res, next);

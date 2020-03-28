@@ -115,7 +115,7 @@ module.exports = class UserController {
         });
 
         if (error) {
-            const errors = error.map((errorDetails) => {
+            const errors = error.details.map((errorDetails) => {
                 const { path, message } = errorDetails;
                 return { path, message };
             });
