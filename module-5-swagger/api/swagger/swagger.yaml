@@ -60,8 +60,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ApiResponse'
-      security:
-      - api_key: []
+      # security:
+      # - api_key: []
     get:
       tags:
       - user
@@ -99,8 +99,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ApiResponse'
-      security:
-      - api_key: []
+      # security:
+      # - api_key: []
   /users/{userId}:
     get:
       tags:
@@ -137,8 +137,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ApiResponse'
-      security:
-      - api_key: []
+      # security:
+      # - api_key: []
     patch:
       tags:
       - user
@@ -183,8 +183,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ApiResponse'
-      security:
-      - api_key: []
+      # security:
+      # - api_key: []
     delete:
       tags:
       - user
@@ -221,8 +221,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ApiResponse'
-      security:
-      - api_key: []
+      # security:
+      # - api_key: []
   /users/login:
     post:
       tags:
