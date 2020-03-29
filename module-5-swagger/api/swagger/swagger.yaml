@@ -1,60 +1,324 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  version: "0.0.1"
-  title: Hello World App
-# during dev, should point to your local machine
-host: localhost:10010
-# basePath prefixes all resource paths 
-basePath: /
-# 
+  description: |
+    This is API documentation for Users REST Service
+  version: 1.0.0
+  title: Users REST Service
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: yurii_onufreiv@epam.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: localhost
+basePath: /api/v1
+tags:
+- name: user
+  description: Operation with user
 schemes:
-  # tip: remove http to make production-grade
-  - http
-  - https
-# format of bodies a client can send (Content-Type)
-consumes:
-  - application/json
-# format of the responses to the client (Accepts)
-produces:
-  - application/json
+- http
 paths:
-  /hello:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: hello_world
-    get:
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
+  /users:
+    post:
+      tags:
+      - user
+      summary: Add a new user
+      operationId: addUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
       parameters:
-        - name: name
-          in: query
-          description: The name of the person to whom to say hello
-          required: false
-          type: string
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: User object that needs to be added
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
-        "200":
-          description: Success
+        201:
+          description: User successfully added
           schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
+            $ref: '#/definitions/User'
+        400:
+          description: Invalid user data
           schema:
-            $ref: "#/definitions/ErrorResponse"
-  /swagger:
-    x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
+            $ref: '#/definitions/InvalidUserError'
+        401:
+          description: Token not provided
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        403:
+          description: Token expired
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+      security:
+      - api_key: []
+    get:
+      tags:
+      - user
+      summary: Finds suggested users
+      operationId: getSuggestedUsers
+      produces:
+      - application/json
+      parameters:
+      - name: loginSubstring
+        in: query
+        description: Substring to find in user login
+        required: true
+        type: string
+      - name: limit
+        in: query
+        description: Count of suggested users to return
+        required: true
+        type: integer
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        401:
+          description: Token not provided
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        403:
+          description: Token expired
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+      security:
+      - api_key: []
+  /users/{userId}:
+    get:
+      tags:
+      - user
+      summary: Find user by ID
+      description: Returns a single user
+      operationId: getUserById
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to return
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        401:
+          description: Token not provided
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        403:
+          description: Token expired
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - user
+      summary: Update an existing user
+      operationId: updateUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: User data to update
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: Invalid user data
+          schema:
+            $ref: '#/definitions/InvalidUserError'
+        401:
+          description: Token not provided
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        403:
+          description: Token expired
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - user
+      summary: Deletes a user
+      operationId: deleteUser
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+      - name: userId
+        in: path
+        description: User id to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: User with passed id removed
+        401:
+          description: Token not provided
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        403:
+          description: Token expired
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        404:
+          description: User id not found
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+      security:
+      - api_key: []
+  /users/login:
+    post:
+      tags:
+      - user
+      summary: Login user
+      operationId: loginUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User that needs to be logged in
+        required: true
+        schema:
+          $ref: '#/definitions/UserToLogin'
+      responses:
+        201:
+          description: User successfully looged in
+          schema:
+            type: string
+            description: auth token
+        403:
+          description: Invalid username or password
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResponse'
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: Authorization
+    in: header
 definitions:
-  HelloWorldResponse:
+  User:
+    type: object
     required:
-      - message
+    - login
+    - password
+    - age
     properties:
+      id:
+        type: string
+        readOnly: true
+      isDeleted:
+        type: boolean
+        default: false
+        readOnly: true
+      login:
+        type: string
+        minLength: 1
+      password:
+        type: string
+        pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{4,}$'
+      age:
+        type: integer
+        format: int32
+        minimum: 4
+        maximum: 130
+  UserToLogin:
+    type: object
+    required:
+    - username
+    - password
+    properties:
+      username:
+        type: string
+        minLength: 1
+      password:
+        type: string
+        minLength: 1
+  InvalidUserError:
+    type: object
+    properties:
+      status:
+        type: string
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationError'
+  ValidationError:
+    type: object
+    properties:
+      path:
+        type: array
+        description: invalid fields paths
+        items:
+          type: string
       message:
         type: string
-  ErrorResponse:
-    required:
-      - message
+        description: detailed violation message
+  ApiResponse:
+    type: object
     properties:
       message:
         type: string
