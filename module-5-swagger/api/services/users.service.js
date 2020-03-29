@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var User = require('../models/user.model');
 
 module.exports = {
-    addUser, getSuggestedUsers, getUserById, updateUser, deleteUser
+    addUser, getSuggestedUsers, getUserForLogin, getUserById, updateUser, deleteUser
 };
 
 function addUser(user, success) {
@@ -27,6 +27,17 @@ function getSuggestedUsers(loginSubstring, limit, success) {
             throw err;
         } else {
             success(users);
+        }
+    });
+}
+
+function getUserForLogin(login, password, success) {
+    User.findOne({ login, password })
+    .exec((err, user) => {
+        if (err) {
+            throw err;
+        } else {
+            success(user);
         }
     });
 }

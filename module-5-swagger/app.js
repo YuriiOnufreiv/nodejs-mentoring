@@ -2,9 +2,16 @@ var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
 module.exports = app; // for testing
 
+var securityHelper = require('./api/helpers/security');
+
 var config = {
-  appRoot: __dirname // required config
-};
+    appRoot: __dirname,
+    swaggerSecurityHandlers: {
+        api_key: (req, securityDefinition, apiKey, next) => {
+            securityHelper.validateApiKey(apiKey, next);
+        }
+    }
+}
 
 var mongoose = require('mongoose');
 

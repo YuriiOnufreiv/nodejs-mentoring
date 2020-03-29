@@ -1,7 +1,8 @@
 var usersService = require('../services/users.service');
+var authService = require('../services/auth.service');
 
 module.exports = {
-    addUser, getSuggestedUsers, getUserById, updateUser, deleteUser
+    addUser, getSuggestedUsers, getUserById, updateUser, deleteUser, loginUser
 };
 
 function addUser(req, res) {
@@ -35,4 +36,10 @@ function deleteUser(req, res) {
     var userId = req.swagger.params.userId.value;
 
     usersService.updateUser(userId, () => res.status(200));
+}
+
+function loginUser(req, res) {
+  var credentials = req.swagger.params.body.value;
+
+  authService.loginUser(credentials, (token) => res.status(201).send({ token }));
 }
