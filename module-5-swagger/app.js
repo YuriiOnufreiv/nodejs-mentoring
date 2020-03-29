@@ -3,6 +3,7 @@ var app = require('express')();
 module.exports = app; // for testing
 
 var securityHelper = require('./api/helpers/security');
+var errorsHandler = require('./api/helpers/errors.handler');
 
 var config = {
     appRoot: __dirname,
@@ -24,5 +25,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   swaggerExpress.register(app);
 
   var port = process.env.PORT || 10010;
+  app.use(errorsHandler.handle);
+
   app.listen(port);
 });

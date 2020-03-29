@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken');
 var usersService = require('./users.service');
+var ApiError = require('../errors/api.error');
 
 var secretKey = 'secretKey';
 
@@ -18,11 +19,11 @@ function verifyApiKey(apiKey) {
     if (apiKey) {
         jwt.verify(apiKey, secretKey, (error) => {
             if (error) {
-                throw new Error('Failed to authenticate apiKey. Forbidden error');
+                throw new ApiError('Failed to authenticate apiKey. Forbidden error', 403);
             }
         });
     } else {
-        throw new Error('No apiKey provided. Unauthorized error');
+        throw new ApiError('No apiKey provided. Unauthorized error', 401);
     }
 }
 
