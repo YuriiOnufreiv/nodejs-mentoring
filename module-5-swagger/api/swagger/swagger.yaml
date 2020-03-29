@@ -19,6 +19,7 @@ schemes:
 - http
 paths:
   /users:
+    x-swagger-router-controller: users
     post:
       tags:
       - user
@@ -102,6 +103,7 @@ paths:
       # security:
       # - api_key: []
   /users/{userId}:
+    x-swagger-router-controller: users
     get:
       tags:
       - user
@@ -224,6 +226,7 @@ paths:
       # security:
       # - api_key: []
   /users/login:
+    x-swagger-router-controller: users
     post:
       tags:
       - user
