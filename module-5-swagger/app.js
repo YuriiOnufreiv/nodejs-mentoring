@@ -6,8 +6,12 @@ var config = {
   appRoot: __dirname // required config
 };
 
+var mongoose = require('mongoose');
+
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
+
+  mongoose.connect('mongodb://localhost/users', { useNewUrlParser: true, useUnifiedTopology: true });
 
   // install middleware
   swaggerExpress.register(app);
