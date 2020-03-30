@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const usersApiRoute = require('./users.route');
-const logger = require('./logger');
+const logger = require('../loggers/logger');
+
+require('dotenv').config();
 
 process.on('unhandledRejection', (reason) => {
     logger.logError(reason);
@@ -10,7 +12,7 @@ process.on('unhandledRejection', (reason) => {
     process.exit(1);
 });
 
-const port = 8080;
+const port = process.env.USERS_SERVICE_PORT;
 
 app.use('/', usersApiRoute);
 

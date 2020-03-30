@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const logger = require('../loggers/logger');
 
 exports.processUnhandledError =  (error, req, res, next) => {
     logger.logError(error);

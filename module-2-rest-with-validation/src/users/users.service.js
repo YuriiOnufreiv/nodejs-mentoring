@@ -5,7 +5,8 @@ function getAdminUser() {
     return {
         login: 'admin',
         password: 'Admin1',
-        age: 50
+        age: 50,
+        groupId: 'admin'
     };
 }
 

@@ -1,5 +1,11 @@
-const logger = require('./logger');
+const logger = require('../loggers/logger');
+const axiosUtils = require('../utils/axios.utils');
+const userGroupUtils = require('../utils/user.group.utils');
 const UserError = require('./users.error');
+
+require('dotenv').config();
+
+const groupsServiceUrl = `${process.env.GROUPS_SERVICE_URL}:${process.env.GROUPS_SERVICE_PORT}/api/v1/groups`;
 
 let userService;
 
@@ -22,17 +28,28 @@ module.exports = class UserController {
     }
 
     @errorLogger
-    processIdParam = (req, res, next, id) => {
-        req.user = userService.find(id);
+    processIdParam = (req, res, next, userId) => {
+        req.user = userService.find(userId);
         if (req.user === undefined || req.user.isDeleted === true) {
-            throw new UserError(`User with id ${id} not found`, 404);
+            throw new UserError(`User with id ${userId} not found`, 404);
         }
         next();
     };
 
     @errorLogger
     findUser = (req, res) => {
-        res.status(200).json(req.user);
+        const user = req.user;
+        axiosUtils.getRequest(`${groupsServiceUrl}/${user.groupId}`,
+            userGroupUtils.getUserWithGroupSuccessCallback(res, user),
+            userGroupUtils.processGroupRequestError(res, user.groupId));
+    };
+
+    @errorLogger
+    findUserGroup = (req, res) => {
+        const groupId = req.params.groupId;
+        axiosUtils.getRequest(`${groupsServiceUrl}/${groupId}`,
+            userGroupUtils.getGroupSuccessCallback(res, groupId),
+            userGroupUtils.processGroupRequestError(res, groupId));
     };
 
     @errorLogger
@@ -74,26 +91,20 @@ module.exports = class UserController {
         next(error);
     };
 
-    validateSchema = (schema)  => (req, res, next) => {
+    validateSchema = (schema) => (req, res, next) => {
         const { error } = schema.validate(req.body, {
             abortEarly: false,
             allowUnknown: false
         });
+
         if (error) {
-            res.status(400).json(this.errorResponse(error.details));
+            const errors = error.details.map((errorDetails) => {
+                const { path, message } = errorDetails;
+                return { path, message };
+            });
+            res.status(400).json({ status: 'failed', errors });
         } else {
             return next();
         }
     };
-
-    errorResponse = (schemaErrors) => {
-        const errors = schemaErrors.map((error) => {
-            const { path, message } = error;
-            return { path, message };
-        });
-        return {
-            status: 'failed',
-            errors
-        };
-    }
 };
